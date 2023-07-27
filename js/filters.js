@@ -1,3 +1,6 @@
+import { sortElements, removeElements } from './utility.js';
+import { createElements } from './picture-list.js';
+
 const PICTURES_COUNT = 10;
 const Filter = {
   DEFAULT: 'filter-default',
@@ -6,12 +9,17 @@ const Filter = {
 };
 
 const filters = document.querySelector('.img-filters');
+const pictureList = document.querySelector('.pictures');
 
 let activeFilter = Filter.DEFAULT;
 
 const sortRandomly = () => Math.random() - 0.5;
 
+const sortByCommentsData = (itemA, itemB) => itemB.getAttribute('data-comments-number') - itemA.getAttribute('data-comments-number');
+
 const sortByComments = (itemA, itemB) => itemB.comments.length - itemA.comments.length;
+
+const sortById = (itemA, itemB) => itemA.getAttribute('data-id') - itemB.getAttribute('data-id');
 
 /**
  * функция сортировки изображений
@@ -19,18 +27,28 @@ const sortByComments = (itemA, itemB) => itemB.comments.length - itemA.comments.
  * @param {Function} inputFunction - функция отрисовки изображений.
  * @param {HTMLElement} element - элемент, в котором находятся изображения.
  */
-const sortPictures = (data, inputFunction, element) => {
-  const pictures = [...data];
+const sortPictures = (data) => {
+  const pictures = document.querySelectorAll('.picture');
+  const picturesArray = Array.from(pictures);
   if (activeFilter === Filter.RANDOM) {
-    const dataSlice = pictures.sort(sortRandomly).slice(0, PICTURES_COUNT);
-    inputFunction(dataSlice, element);
+    picturesArray.sort(sortRandomly);
+    sortElements(pictureList, picturesArray);
+    removeElements(pictures, PICTURES_COUNT);
   }
   if (activeFilter === Filter.DISCUSSED) {
-    pictures.sort(sortByComments);
-    inputFunction(pictures, element);
+    picturesArray.sort(sortByCommentsData);
+    if (pictures.length > PICTURES_COUNT) {
+      return sortElements(pictureList, picturesArray);
+    }
+    const sortedData = [...data].sort(sortByComments);
+    createElements(sortedData, pictureList);
   }
   if (activeFilter === Filter.DEFAULT) {
-    return inputFunction(data, element);
+    picturesArray.sort(sortById);
+    if (pictures.length > PICTURES_COUNT) {
+      return sortElements(pictureList, picturesArray);
+    }
+    createElements(data, pictureList);
   }
 };
 
@@ -40,7 +58,7 @@ const sortPictures = (data, inputFunction, element) => {
  * @param {Function} inputFunction - функция отрисовки изображений.
  * @param {HTMLElement} element - элемент, в котором находятся изображения.
  */
-const onFilterClick = (data, inputFunction, element) => {
+const onFilterClick = (data, callback) => {
   filters.addEventListener('click', (evt) => {
     if (!evt.target.classList.contains('img-filters__button')) {
       return;
@@ -53,7 +71,7 @@ const onFilterClick = (data, inputFunction, element) => {
     target.classList.add('img-filters__button--active');
     active.classList.remove('img-filters__button--active');
     activeFilter = target.id;
-    sortPictures(data, inputFunction, element);
+    callback(data);
   });
 };
 
@@ -63,9 +81,9 @@ const onFilterClick = (data, inputFunction, element) => {
  * @param {Function} inputFunction - функция отрисовки изображений.
  * @param {HTMLElement} element - элемент, в котором находятся изображения.
  */
-const setFilters = (data, inputFunction, element) => {
+const setFilters = (data, callback) => {
   filters.classList.remove('img-filters--inactive');
-  onFilterClick(data, inputFunction, element);
+  onFilterClick(data, callback);
 };
 
-export { setFilters };
+export { setFilters, sortPictures };

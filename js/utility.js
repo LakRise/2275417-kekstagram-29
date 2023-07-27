@@ -124,8 +124,16 @@ const debounce = (callback, timeoutDelay = 500) => {
  * функция, удаляющая группу html элементов.
  * @param {array} elements - массив html элементов.
  */
-const removeElements = (elements) => {
-  elements.forEach((item) => item.remove());
+const removeElements = (elements, index) => {
+  for (let i = index; i < elements.length; i++) {
+    elements[i].remove();
+  }
 };
 
-export { closeWindow, openWindow, checkNoRepeatedElement, splitArray, blockSubmitButton, unblockSubmitButton, addError, showAlert, changeEvents, observeClassChange, debounce, removeElements };
+const sortElements = (container, elements) => {
+  for (let i = 0; i < elements.length; i++) {
+    container.append(elements[i]);
+  }
+};
+
+export { closeWindow, openWindow, checkNoRepeatedElement, splitArray, blockSubmitButton, unblockSubmitButton, addError, showAlert, changeEvents, observeClassChange, debounce, removeElements, sortElements };

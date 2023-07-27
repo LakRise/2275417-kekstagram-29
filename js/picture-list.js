@@ -8,7 +8,7 @@ const pictureTemplate = document.querySelector('#picture').content;
  * @param {HTMLElement} element - родительский html элемент в который будут добавлены фотографии.
  */
 const createElements = (data, element) => {
-  removeElements(element.querySelectorAll('.picture'));
+  removeElements(element.querySelectorAll('.picture'), 0);
   for (let i = 0; i < data.length; i++) {
     const newPicture = pictureTemplate.cloneNode(true);
     const picture = newPicture.querySelector('.picture');
@@ -20,6 +20,7 @@ const createElements = (data, element) => {
     likes.textContent = data[i].likes;
     comments.textContent = data[i].comments.length;
     picture.dataset.id = data[i].id;
+    picture.dataset.commentsNumber = data[i].comments.length;
 
     element.append(newPicture);
   }
