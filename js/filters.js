@@ -11,7 +11,11 @@ const Filter = {
 const filters = document.querySelector('.img-filters');
 const pictureList = document.querySelector('.pictures');
 
-let activeFilter = Filter.DEFAULT;
+let activeFilter = location.hash;
+
+if (location.hash === '') {
+  activeFilter = Filter.DEFAULT;
+}
 
 const sortRandomly = () => Math.random() - 0.5;
 
@@ -20,6 +24,12 @@ const sortByCommentsData = (itemA, itemB) => itemB.getAttribute('data-comments-n
 const sortByComments = (itemA, itemB) => itemB.comments.length - itemA.comments.length;
 
 const sortById = (itemA, itemB) => itemA.getAttribute('data-id') - itemB.getAttribute('data-id');
+
+const setActiveButton = () => {
+  const active = filters.querySelector('.img-filters__button--active');
+  active.classList.remove('img-filters__button--active');
+  filters.querySelector(`.img-filters__button${location.hash}`).classList.add('img-filters__button--active');
+};
 
 /**
  * функция сортировки изображений
@@ -30,12 +40,12 @@ const sortById = (itemA, itemB) => itemA.getAttribute('data-id') - itemB.getAttr
 const sortPictures = (data) => {
   const pictures = document.querySelectorAll('.picture');
   const picturesArray = Array.from(pictures);
-  if (activeFilter === Filter.RANDOM) {
+  if (location.hash === `#${Filter.RANDOM}`) {
     picturesArray.sort(sortRandomly);
     sortElements(pictureList, picturesArray);
     removeElements(pictures, PICTURES_COUNT);
   }
-  if (activeFilter === Filter.DISCUSSED) {
+  if (location.hash === `#${Filter.DISCUSSED}`) {
     picturesArray.sort(sortByCommentsData);
     if (pictures.length > PICTURES_COUNT) {
       return sortElements(pictureList, picturesArray);
@@ -43,7 +53,7 @@ const sortPictures = (data) => {
     const sortedData = [...data].sort(sortByComments);
     createElements(sortedData, pictureList);
   }
-  if (activeFilter === Filter.DEFAULT) {
+  if (location.hash === `#${Filter.DEFAULT}`) {
     picturesArray.sort(sortById);
     if (pictures.length > PICTURES_COUNT) {
       return sortElements(pictureList, picturesArray);
@@ -71,6 +81,7 @@ const onFilterClick = (data, callback) => {
     target.classList.add('img-filters__button--active');
     active.classList.remove('img-filters__button--active');
     activeFilter = target.id;
+    location.hash = activeFilter;
     callback(data);
   });
 };
@@ -86,4 +97,4 @@ const setFilters = (data, callback) => {
   onFilterClick(data, callback);
 };
 
-export { setFilters, sortPictures };
+export { setFilters, sortPictures, setActiveButton };

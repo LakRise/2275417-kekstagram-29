@@ -2,7 +2,7 @@ import { openPhoto } from './picture-modal.js';
 import { createElements } from './picture-list.js';
 import { showAlert, debounce } from './utility.js';
 import { getData } from './api.js';
-import { setFilters, sortPictures } from './filters.js';
+import { setFilters, sortPictures, setActiveButton } from './filters.js';
 
 /**
  * функция отображения крупного изображения при нажатии на миниатюру.
@@ -35,9 +35,17 @@ const createGallery = (data, element) => {
  */
 const renderGallery = async (element) => {
   try {
-    const data = await getData();
-    createGallery(data, element);
-    setFilters(data, debounce(sortPictures));
+    let photos = null;
+    if (localStorage.getItem('data') === null) {
+      photos = await getData();
+      localStorage.setItem('data', JSON.stringify(photos));
+    } else {
+      photos = JSON.parse(localStorage.getItem('data'));
+    }
+    createGallery(photos, element);
+    setActiveButton();
+    sortPictures(photos);
+    setFilters(photos, debounce(sortPictures));
   } catch (err) {
     showAlert(err.message);
   }
