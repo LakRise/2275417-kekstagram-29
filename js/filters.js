@@ -11,12 +11,6 @@ const Filter = {
 const filters = document.querySelector('.img-filters');
 const pictureList = document.querySelector('.pictures');
 
-let activeFilter = location.hash;
-
-if (location.hash === '') {
-  activeFilter = Filter.DEFAULT;
-}
-
 const sortRandomly = () => Math.random() - 0.5;
 
 const sortByCommentsData = (itemA, itemB) => itemB.getAttribute('data-comments-number') - itemA.getAttribute('data-comments-number');
@@ -30,6 +24,7 @@ const setActiveButton = () => {
   active.classList.remove('img-filters__button--active');
   filters.querySelector(`.img-filters__button${location.hash}`).classList.add('img-filters__button--active');
 };
+
 
 /**
  * функция сортировки изображений
@@ -74,14 +69,13 @@ const onFilterClick = (data, callback) => {
       return;
     }
     const target = evt.target;
-    if (`#${target.id}` === activeFilter || target.id === activeFilter) {
+    if (`#${target.id}` === location.hash || (target.id === Filter.DEFAULT && location.hash === '')) {
       return;
     }
     const active = filters.querySelector('.img-filters__button--active');
     target.classList.add('img-filters__button--active');
     active.classList.remove('img-filters__button--active');
-    activeFilter = target.id;
-    location.hash = activeFilter;
+    location.hash = target.id;
     callback(data);
   });
 };
