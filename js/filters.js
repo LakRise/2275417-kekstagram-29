@@ -74,7 +74,7 @@ const onFilterClick = (data, callback) => {
       return;
     }
     const target = evt.target;
-    if (target.id === activeFilter) {
+    if (`#${target.id}` === activeFilter || target.id === activeFilter) {
       return;
     }
     const active = filters.querySelector('.img-filters__button--active');
